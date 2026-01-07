@@ -87,7 +87,7 @@ public class AdminUserView extends JPanel {
 
         add(topPanel, BorderLayout.NORTH);
 
-        String[] columns = { "No", "Nama", "Email", "Telepon", "Username", "Role", "Poin" };
+        String[] columns = { "No", "Nama", "Email", "Telepon", "Username", "Role" };
         tableModel = new DefaultTableModel(columns, 0);
         table = new JTable(tableModel);
         table.setFont(new Font("Arial", Font.PLAIN, 13));
@@ -120,7 +120,7 @@ public class AdminUserView extends JPanel {
         for (User u : userList) {
             tableModel.addRow(new Object[] {
                     no++, u.getNama(), u.getEmail(), u.getTelepon(),
-                    u.getUsername(), u.getRole(), u.getSaldoPoin()
+                    u.getUsername(), u.getRole()
             });
         }
     }

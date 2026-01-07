@@ -150,8 +150,12 @@ public class UserDashboardView extends JFrame {
                     .filter(t -> "selesai".equalsIgnoreCase(t.getStatus()))
                     .mapToDouble(Transaksi::getBerat).sum();
 
-            int poin = currentUser.getSaldoPoin();
-            long rupiahValue = poin * 100L;
+            double totalPendapatan = history.stream()
+                    .filter(t -> "selesai".equalsIgnoreCase(t.getStatus()))
+                    .mapToDouble(Transaksi::getTotalHarga).sum();
+
+
+            // Removed point conversion logic as requested
 
             long totalTransaksiSelesai = history.stream()
                     .filter(t -> "selesai".equalsIgnoreCase(t.getStatus()))
@@ -163,8 +167,9 @@ public class UserDashboardView extends JFrame {
             statsGrid.setPreferredSize(new Dimension(800, 140));
             statsGrid.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-            statsGrid.add(createStatCard("Saldo Poin", NumberFormat.getNumberInstance().format(poin) + " pts",
-                    "Rp " + NumberFormat.getNumberInstance().format(rupiahValue), new Color(255, 165, 0)));
+            statsGrid.add(createStatCard("Total Pendapatan",
+                    "Rp " + NumberFormat.getNumberInstance().format(totalPendapatan),
+                    "Dari semua transaksi", new Color(255, 165, 0)));
             statsGrid.add(createStatCard("Total Transaksi", totalTransaksiSelesai + " Selesai", "Kontribusi",
                     new Color(100, 149, 237)));
             statsGrid.add(createStatCard("Total Berat", String.format("%.1f kg", totalBerat), "Kontribusi",

@@ -11,26 +11,66 @@ public class AdminRiwayatView extends JPanel {
     private TransaksiController controller;
     private JTable table;
     private DefaultTableModel tableModel;
+    private List<Transaksi> transaksiList;
 
     public AdminRiwayatView() {
         controller = new TransaksiController();
-        setLayout(new BorderLayout(10, 10));
+        setLayout(new BorderLayout(15, 15));
+        setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
+        setBackground(Color.WHITE);
 
-        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        // Top Panel with Title and Buttons
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.setBackground(Color.WHITE);
+
+        JLabel lblTitle = new JLabel("Riwayat Transaksi");
+        lblTitle.setFont(new Font("Arial", Font.BOLD, 24));
+        lblTitle.setForeground(new Color(34, 139, 34));
+        topPanel.add(lblTitle, BorderLayout.WEST);
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        buttonPanel.setBackground(Color.WHITE);
+
         JButton btnRefresh = new JButton("Refresh");
-        JButton btnConfirm = new JButton("Konfirmasi (Selesai)");
-        JButton btnReject = new JButton("Tolak / Batalkan");
+        btnRefresh.setFont(new Font("Arial", Font.PLAIN, 13));
+        btnRefresh.setPreferredSize(new Dimension(100, 32));
+        btnRefresh.setFocusPainted(false);
 
-        topPanel.add(btnRefresh);
-        topPanel.add(btnConfirm);
-        topPanel.add(btnReject);
+        JButton btnConfirm = new JButton("Konfirmasi (Selesai)");
+        btnConfirm.setFont(new Font("Arial", Font.PLAIN, 13));
+        btnConfirm.setBackground(new Color(34, 139, 34));
+        btnConfirm.setForeground(Color.WHITE);
+        btnConfirm.setPreferredSize(new Dimension(160, 32));
+        btnConfirm.setFocusPainted(false);
+
+        JButton btnReject = new JButton("Tolak / Batalkan");
+        btnReject.setFont(new Font("Arial", Font.PLAIN, 13));
+        btnReject.setBackground(new Color(220, 53, 69));
+        btnReject.setForeground(Color.WHITE);
+        btnReject.setPreferredSize(new Dimension(140, 32));
+        btnReject.setFocusPainted(false);
+
+        buttonPanel.add(btnRefresh);
+        buttonPanel.add(btnConfirm);
+        buttonPanel.add(btnReject);
+        topPanel.add(buttonPanel, BorderLayout.EAST);
 
         add(topPanel, BorderLayout.NORTH);
 
-        String[] columns = { "ID", "User", "Kategori", "Lokasi", "Berat", "Total", "Status", "Tanggal" };
+        // Table
+        String[] columns = { "No", "User", "Kategori", "Lokasi", "Berat (Kg)", "Total (Rp)", "Status", "Tanggal" };
         tableModel = new DefaultTableModel(columns, 0);
         table = new JTable(tableModel);
-        add(new JScrollPane(table), BorderLayout.CENTER);
+        table.setFont(new Font("Arial", Font.PLAIN, 13));
+        table.setRowHeight(28);
+        table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 13));
+        table.getTableHeader().setBackground(new Color(240, 240, 240));
+        table.getTableHeader().setForeground(Color.DARK_GRAY);
+        table.setSelectionBackground(new Color(220, 240, 220));
+
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
+        add(scrollPane, BorderLayout.CENTER);
 
         btnRefresh.addActionListener(e -> loadData());
         btnConfirm.addActionListener(e -> updateStatus("selesai"));
@@ -41,10 +81,12 @@ public class AdminRiwayatView extends JPanel {
 
     private void loadData() {
         tableModel.setRowCount(0);
-        List<Transaksi> list = controller.getAllTransaksi();
-        for (Transaksi t : list) {
+        transaksiList = controller.getAllTransaksi();
+
+        int no = 1;
+        for (Transaksi t : transaksiList) {
             tableModel.addRow(new Object[] {
-                    t.getId(), t.getNamaUser(), t.getNamaKategori(), t.getNamaLokasi(),
+                    no++, t.getNamaUser(), t.getNamaKategori(), t.getNamaLokasi(),
                     t.getBerat(), t.getTotalHarga(), t.getStatus(), t.getCreatedAt()
             });
         }
@@ -63,7 +105,7 @@ public class AdminRiwayatView extends JPanel {
             return;
         }
 
-        int id = (int) tableModel.getValueAt(row, 0);
+        int id = transaksiList.get(row).getId();
         if (controller.updateStatus(id, status)) {
             JOptionPane.showMessageDialog(this, "Status diubah menjadi: " + status);
             loadData();

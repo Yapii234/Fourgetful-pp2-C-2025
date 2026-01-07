@@ -74,7 +74,7 @@ public class TransaksiController {
         return list;
     }
 
-    // Get Recent Transactions (Admin Dashboard - Limit 10)
+    // Get Recent Transactions
     public List<Transaksi> getRecentTransaksi() {
         List<Transaksi> list = new ArrayList<>();
         String sql = "SELECT t.*, u.nama AS user_nama, k.nama_kategori, l.nama_lokasi " +
@@ -125,7 +125,7 @@ public class TransaksiController {
         return list;
     }
 
-    // Update Status (Admin) -> Update User Points if 'selesai'
+    // Update Status (Admin)
     public boolean updateStatus(int id, String status) {
         String sql = "UPDATE transaksi SET status = ? WHERE id = ?";
         try (Connection conn = DatabaseConfig.getConnection();
@@ -136,8 +136,6 @@ public class TransaksiController {
 
             int affected = pstmt.executeUpdate();
             if (affected > 0 && "selesai".equalsIgnoreCase(status)) {
-                // Add points logic (1000 Total Harga = 1 Point, for example)
-                // First get transaction details
                 updateUserPoints(id);
             }
             return affected > 0;
@@ -157,7 +155,7 @@ public class TransaksiController {
                 if (rs.next()) {
                     int userId = rs.getInt("id_user");
                     double total = rs.getDouble("total_harga");
-                    int pointsToAdd = (int) (total / 1000); // 1 point per 1000 rupiah
+                    int pointsToAdd = (int) (total / 1000);
 
                     String sqlUpdate = "UPDATE users SET saldo_poin = saldo_poin + ? WHERE id = ?";
                     try (PreparedStatement updateStmt = conn.prepareStatement(sqlUpdate)) {

@@ -16,7 +16,7 @@ public class RegisterView extends JFrame {
 
     private void initComponents() {
         setTitle("Register - E-Waste Management System");
-        setSize(400, 450);
+        setSize(550, 550);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
@@ -24,16 +24,19 @@ public class RegisterView extends JFrame {
         // Header
         JPanel headerPanel = new JPanel();
         headerPanel.setBackground(new Color(34, 139, 34));
+        headerPanel.setBorder(BorderFactory.createEmptyBorder(25, 20, 25, 20));
         JLabel titleLabel = new JLabel("Buat Akun Baru");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 28));
         titleLabel.setForeground(Color.WHITE);
         headerPanel.add(titleLabel);
         add(headerPanel, BorderLayout.NORTH);
 
         // Form
         JPanel formPanel = new JPanel(new GridBagLayout());
+        formPanel.setBackground(Color.WHITE);
+        formPanel.setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.insets = new Insets(8, 10, 8, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         int row = 0;
@@ -46,12 +49,20 @@ public class RegisterView extends JFrame {
         add(formPanel, BorderLayout.CENTER);
 
         // Buttons
-        JPanel buttonPanel = new JPanel();
-        JButton btnRegister = new JButton("Daftar Sekarang");
-        JButton btnLogin = new JButton("Sudah punya akun? Login");
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 20));
+        buttonPanel.setBackground(Color.WHITE);
 
+        JButton btnRegister = new JButton("Daftar Sekarang");
+        btnRegister.setFont(new Font("Arial", Font.BOLD, 14));
         btnRegister.setBackground(new Color(34, 139, 34));
         btnRegister.setForeground(Color.WHITE);
+        btnRegister.setPreferredSize(new Dimension(160, 38));
+        btnRegister.setFocusPainted(false);
+
+        JButton btnLogin = new JButton("Sudah punya akun? Login");
+        btnLogin.setFont(new Font("Arial", Font.PLAIN, 14));
+        btnLogin.setPreferredSize(new Dimension(200, 38));
+        btnLogin.setFocusPainted(false);
 
         btnRegister.addActionListener(e -> handleRegister());
         btnLogin.addActionListener(e -> {
@@ -68,9 +79,23 @@ public class RegisterView extends JFrame {
     private void addFormField(JPanel panel, GridBagConstraints gbc, String label, Component comp, int row) {
         gbc.gridx = 0;
         gbc.gridy = row;
-        panel.add(new JLabel(label), gbc);
+        gbc.anchor = GridBagConstraints.WEST;
+        JLabel lbl = new JLabel(label);
+        lbl.setFont(new Font("Arial", Font.PLAIN, 14));
+        panel.add(lbl, gbc);
+
         gbc.gridx = 1;
         gbc.gridy = row;
+        gbc.anchor = GridBagConstraints.CENTER;
+
+        if (comp instanceof JTextField) {
+            ((JTextField) comp).setFont(new Font("Arial", Font.PLAIN, 14));
+            comp.setPreferredSize(new Dimension(280, 32));
+        } else if (comp instanceof JPasswordField) {
+            ((JPasswordField) comp).setFont(new Font("Arial", Font.PLAIN, 14));
+            comp.setPreferredSize(new Dimension(280, 32));
+        }
+
         panel.add(comp, gbc);
     }
 

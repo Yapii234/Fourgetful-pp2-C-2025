@@ -25,44 +25,130 @@ public class UserTransaksiView extends JPanel {
         katController = new KategoriController();
         lokController = new LokasiController();
 
-        setLayout(new BorderLayout(10, 10));
-        setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        setLayout(new BorderLayout(15, 15));
+        setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
+        setBackground(Color.WHITE);
 
-        JPanel formPanel = new JPanel(new GridLayout(6, 2, 10, 10));
+        // Title Panel
+        JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        titlePanel.setBackground(Color.WHITE);
+        JLabel lblTitle = new JLabel("Buat Transaksi E-Waste Baru");
+        lblTitle.setFont(new Font("Arial", Font.BOLD, 24));
+        lblTitle.setForeground(new Color(34, 139, 34));
+        titlePanel.add(lblTitle);
+        add(titlePanel, BorderLayout.NORTH);
 
-        formPanel.add(new JLabel("Pilih Kategori E-Waste:"));
+        // Form Panel
+        JPanel formContainer = new JPanel(new GridBagLayout());
+        formContainer.setBackground(Color.WHITE);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(8, 8, 8, 8);
+        gbc.weightx = 1.0;
+
+        int row = 0;
+
+        // Kategori
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        JLabel lblKat = new JLabel("Pilih Kategori E-Waste:");
+        lblKat.setFont(new Font("Arial", Font.PLAIN, 14));
+        formContainer.add(lblKat, gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = row++;
         cmbKategori = new JComboBox<>();
+        cmbKategori.setFont(new Font("Arial", Font.PLAIN, 14));
+        cmbKategori.setPreferredSize(new Dimension(300, 30));
         loadKategori();
-        formPanel.add(cmbKategori);
+        formContainer.add(cmbKategori, gbc);
 
-        formPanel.add(new JLabel("Perkiraan Berat (Kg):"));
+        // Berat
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        JLabel lblBerat = new JLabel("Perkiraan Berat (Kg):");
+        lblBerat.setFont(new Font("Arial", Font.PLAIN, 14));
+        formContainer.add(lblBerat, gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = row++;
         txtBerat = new JTextField("0");
-        formPanel.add(txtBerat);
+        txtBerat.setFont(new Font("Arial", Font.PLAIN, 14));
+        txtBerat.setPreferredSize(new Dimension(300, 30));
+        formContainer.add(txtBerat, gbc);
 
-        formPanel.add(new JLabel("Pilih Lokasi Penjemputan:"));
+        // Lokasi
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        JLabel lblLok = new JLabel("Pilih Lokasi Penjemputan:");
+        lblLok.setFont(new Font("Arial", Font.PLAIN, 14));
+        formContainer.add(lblLok, gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = row++;
         cmbLokasi = new JComboBox<>();
+        cmbLokasi.setFont(new Font("Arial", Font.PLAIN, 14));
+        cmbLokasi.setPreferredSize(new Dimension(300, 30));
         loadLokasi();
-        formPanel.add(cmbLokasi);
+        formContainer.add(cmbLokasi, gbc);
 
-        formPanel.add(new JLabel("Catatan Tambahan:"));
-        txtCatatan = new JTextArea(3, 20);
-        formPanel.add(new JScrollPane(txtCatatan));
+        // Catatan
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        gbc.anchor = GridBagConstraints.NORTHWEST;
+        JLabel lblCat = new JLabel("Catatan Tambahan:");
+        lblCat.setFont(new Font("Arial", Font.PLAIN, 14));
+        formContainer.add(lblCat, gbc);
 
-        formPanel.add(new JLabel("Estimasi Total Harga (Rp):"));
-        lblEstimasi = new JLabel("0");
-        lblEstimasi.setFont(new Font("Arial", Font.BOLD, 14));
-        formPanel.add(lblEstimasi);
+        gbc.gridx = 1;
+        gbc.gridy = row++;
+        gbc.anchor = GridBagConstraints.CENTER;
+        txtCatatan = new JTextArea(3, 25);
+        txtCatatan.setFont(new Font("Arial", Font.PLAIN, 14));
+        txtCatatan.setLineWrap(true);
+        txtCatatan.setWrapStyleWord(true);
+        txtCatatan.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
+        formContainer.add(txtCatatan, gbc);
+
+        // Estimasi
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        JLabel lblEstLabel = new JLabel("Estimasi Total Harga:");
+        lblEstLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        formContainer.add(lblEstLabel, gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = row++;
+        lblEstimasi = new JLabel("Rp 0");
+        lblEstimasi.setFont(new Font("Arial", Font.BOLD, 18));
+        lblEstimasi.setForeground(new Color(34, 139, 34));
+        formContainer.add(lblEstimasi, gbc);
+
+        // Buttons
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        gbc.gridwidth = 2;
+        gbc.insets = new Insets(20, 8, 8, 8);
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
+        buttonPanel.setBackground(Color.WHITE);
 
         JButton btnHitung = new JButton("Hitung Estimasi");
-        formPanel.add(btnHitung);
+        btnHitung.setFont(new Font("Arial", Font.PLAIN, 14));
+        btnHitung.setPreferredSize(new Dimension(150, 35));
+        btnHitung.setFocusPainted(false);
+        buttonPanel.add(btnHitung);
 
         JButton btnSubmit = new JButton("Kirim Permintaan");
+        btnSubmit.setFont(new Font("Arial", Font.BOLD, 14));
         btnSubmit.setBackground(new Color(34, 139, 34));
         btnSubmit.setForeground(Color.WHITE);
-        formPanel.add(btnSubmit);
+        btnSubmit.setPreferredSize(new Dimension(180, 35));
+        btnSubmit.setFocusPainted(false);
+        buttonPanel.add(btnSubmit);
 
-        add(new JLabel("Buat Transaksi E-Waste Baru", SwingConstants.CENTER), BorderLayout.NORTH);
-        add(formPanel, BorderLayout.CENTER);
+        formContainer.add(buttonPanel, gbc);
+
+        add(formContainer, BorderLayout.CENTER);
 
         // Listeners
         btnHitung.addActionListener(e -> calculateTotal());

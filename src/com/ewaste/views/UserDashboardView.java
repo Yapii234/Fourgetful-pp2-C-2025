@@ -30,9 +30,9 @@ public class UserDashboardView extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        // 1. Header Panel
+        //Header Panel
         JPanel headerPanel = new JPanel(new BorderLayout());
-        headerPanel.setBackground(new Color(34, 139, 34)); // Forest Green
+        headerPanel.setBackground(new Color(34, 139, 34)); 
         headerPanel.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
 
         JLabel lblBrand = new JLabel("E-Waste System");
@@ -42,12 +42,12 @@ public class UserDashboardView extends JFrame {
         JPanel userPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         userPanel.setOpaque(false);
 
-        JLabel lblUser = new JLabel("User: " + currentUser.getNama() + "  |  ");
+        JLabel lblUser = new JLabel(currentUser.getNama() + "  |  ");
         lblUser.setForeground(Color.WHITE);
         lblUser.setFont(new Font("Arial", Font.BOLD, 14));
 
         JButton btnLogout = new JButton("Logout");
-        btnLogout.setBackground(new Color(220, 53, 69)); // Bootstrap Danger Red
+        btnLogout.setBackground(new Color(220, 53, 69)); 
         btnLogout.setForeground(Color.WHITE);
         btnLogout.setFocusPainted(false);
         btnLogout.setFont(new Font("Arial", Font.BOLD, 12));
@@ -65,7 +65,7 @@ public class UserDashboardView extends JFrame {
 
         add(headerPanel, BorderLayout.NORTH);
 
-        // 2. Sidebar
+        //Sidebar
         JPanel sidebar = new JPanel();
         sidebar.setLayout(new GridLayout(10, 1, 5, 5));
         sidebar.setBackground(new Color(245, 245, 245));
@@ -88,7 +88,7 @@ public class UserDashboardView extends JFrame {
 
         add(sidebar, BorderLayout.WEST);
 
-        // 3. Content Panel
+        //Content Panel
         cardLayout = new CardLayout();
         contentPanel = new JPanel(cardLayout);
 
@@ -100,12 +100,12 @@ public class UserDashboardView extends JFrame {
 
         // Actions
         btnDash.addActionListener(e -> {
-            contentPanel.add(new UserHomePanel(), "Dashboard"); // Refresh
+            contentPanel.add(new UserHomePanel(), "Dashboard");
             cardLayout.show(contentPanel, "Dashboard");
         });
         btnTrans.addActionListener(e -> cardLayout.show(contentPanel, "Transaksi"));
         btnRiwayat.addActionListener(e -> {
-            contentPanel.add(new UserRiwayatView(), "Riwayat"); // Refresh
+            contentPanel.add(new UserRiwayatView(), "Riwayat");
             cardLayout.show(contentPanel, "Riwayat");
         });
     }
@@ -117,7 +117,7 @@ public class UserDashboardView extends JFrame {
         btn.setBackground(Color.WHITE);
         btn.setFocusPainted(false);
         btn.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 5, 0, 0, new Color(34, 139, 34)), // Green accent
+                BorderFactory.createMatteBorder(0, 5, 0, 0, new Color(34, 139, 34)), 
                 BorderFactory.createEmptyBorder(10, 15, 10, 10)));
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
         return btn;
@@ -129,28 +129,27 @@ public class UserDashboardView extends JFrame {
             setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
             setBackground(Color.WHITE);
 
-            // A. Welcome Message
+            // Welcome Message
             JLabel lblWelcome = new JLabel("SELAMAT DATANG, " + currentUser.getNama().toUpperCase() + "!");
             lblWelcome.setFont(new Font("Arial", Font.BOLD, 28));
             lblWelcome.setForeground(new Color(34, 139, 34));
             add(lblWelcome, BorderLayout.NORTH);
 
-            // Container for Center content (Stats + Table + Button)
             JPanel centerContainer = new JPanel();
             centerContainer.setLayout(new BoxLayout(centerContainer, BoxLayout.Y_AXIS));
             centerContainer.setOpaque(false);
 
-            // B. Stats Area
+            // Stats Area
             // Calculate Stats
             List<Transaksi> history = transaksiController.getUserTransaksi(currentUser.getId());
             double totalBerat = history.stream().mapToDouble(Transaksi::getBerat).sum();
 
             int poin = currentUser.getSaldoPoin();
-            long rupiahValue = poin * 100L; // Assumption: 1 Point = Rp 100 based on prompt example
+            long rupiahValue = poin * 100L;
 
             JPanel statsGrid = new JPanel(new GridLayout(1, 3, 20, 0));
             statsGrid.setOpaque(false);
-            statsGrid.setMaximumSize(new Dimension(2000, 140)); // Prevent it from stretching too tall
+            statsGrid.setMaximumSize(new Dimension(2000, 140));
             statsGrid.setPreferredSize(new Dimension(800, 140));
             statsGrid.setAlignmentX(Component.LEFT_ALIGNMENT);
 
@@ -164,7 +163,7 @@ public class UserDashboardView extends JFrame {
             centerContainer.add(statsGrid);
             centerContainer.add(Box.createRigidArea(new Dimension(0, 30))); // Spacer
 
-            // C. Recent History Table
+            //History terbaru Table
             JPanel tablePanel = new JPanel(new BorderLayout(0, 10));
             tablePanel.setOpaque(false);
             tablePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -175,8 +174,6 @@ public class UserDashboardView extends JFrame {
 
             String[] columns = { "Tanggal", "Kategori", "Lokasi", "Berat (Kg)", "Status" };
             DefaultTableModel model = new DefaultTableModel(columns, 0);
-
-            // Show max 3-5
             int count = 0;
             for (Transaksi t : history) {
                 if (count++ >= 5)
@@ -196,12 +193,12 @@ public class UserDashboardView extends JFrame {
             tablePanel.add(scrollPane, BorderLayout.CENTER);
 
             centerContainer.add(tablePanel);
-            centerContainer.add(Box.createRigidArea(new Dimension(0, 20))); // Spacer
+            centerContainer.add(Box.createRigidArea(new Dimension(0, 20)));
 
             // D. Action Button
             JButton btnNewTrans = new JButton("BUAT TRANSAKSI BARU");
             btnNewTrans.setFont(new Font("Arial", Font.BOLD, 14));
-            btnNewTrans.setBackground(new Color(34, 139, 34)); // Forest Green
+            btnNewTrans.setBackground(new Color(34, 139, 34)); 
             btnNewTrans.setForeground(Color.WHITE);
             btnNewTrans.setFocusPainted(false);
             btnNewTrans.setAlignmentX(Component.LEFT_ALIGNMENT);

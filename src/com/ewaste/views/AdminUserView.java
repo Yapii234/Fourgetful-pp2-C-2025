@@ -13,13 +13,24 @@ public class AdminUserView extends JPanel {
     private DefaultTableModel tableModel;
     private JTextField txtNama, txtEmail, txtTelepon, txtUsername, txtPassword;
     private JComboBox<String> cmbRole;
+    private List<User> userList;
 
     public AdminUserView() {
         controller = new UserController();
-        setLayout(new BorderLayout(10, 10));
+        setLayout(new BorderLayout(15, 15));
+        setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        setBackground(Color.WHITE);
 
-        JPanel formPanel = new JPanel(new GridLayout(6, 2, 5, 5));
+        // Title
+        JLabel lblTitle = new JLabel("Manajemen User");
+        lblTitle.setFont(new Font("Arial", Font.BOLD, 20));
+        lblTitle.setForeground(new Color(34, 139, 34));
+        lblTitle.setBorder(BorderFactory.createEmptyBorder(0, 0, 15, 0));
+        add(lblTitle, BorderLayout.NORTH);
+
+        JPanel formPanel = new JPanel(new GridLayout(6, 2, 10, 10));
         formPanel.setBorder(BorderFactory.createTitledBorder("Form User"));
+        formPanel.setBackground(Color.WHITE);
 
         formPanel.add(new JLabel("Nama:"));
         txtNama = new JTextField();
@@ -38,34 +49,54 @@ public class AdminUserView extends JPanel {
         formPanel.add(txtUsername);
 
         formPanel.add(new JLabel("Password:"));
-        txtPassword = new JPasswordField(); // Should be JPasswordField, but for simple edit text is easier
+        txtPassword = new JPasswordField();
         formPanel.add(txtPassword);
 
         formPanel.add(new JLabel("Role:"));
         cmbRole = new JComboBox<>(new String[] { "user", "admin" });
         formPanel.add(cmbRole);
 
-        JPanel btnPanel = new JPanel();
+        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        btnPanel.setBackground(Color.WHITE);
+
         JButton btnAdd = new JButton("Tambah");
+        btnAdd.setBackground(new Color(34, 139, 34));
+        btnAdd.setForeground(Color.WHITE);
+        btnAdd.setFocusPainted(false);
+
         JButton btnEdit = new JButton("Edit");
+        btnEdit.setFocusPainted(false);
+
         JButton btnDelete = new JButton("Hapus");
+        btnDelete.setBackground(new Color(220, 53, 69));
+        btnDelete.setForeground(Color.WHITE);
+        btnDelete.setFocusPainted(false);
+
         JButton btnClear = new JButton("Clear");
+        btnClear.setFocusPainted(false);
 
         btnPanel.add(btnAdd);
         btnPanel.add(btnEdit);
         btnPanel.add(btnDelete);
         btnPanel.add(btnClear);
 
-        JPanel topPanel = new JPanel(new BorderLayout());
+        JPanel topPanel = new JPanel(new BorderLayout(0, 10));
+        topPanel.setBackground(Color.WHITE);
         topPanel.add(formPanel, BorderLayout.CENTER);
         topPanel.add(btnPanel, BorderLayout.SOUTH);
 
         add(topPanel, BorderLayout.NORTH);
 
-        String[] columns = { "ID", "Nama", "Email", "Telepon", "Username", "Role", "Poin" };
+        String[] columns = { "No", "Nama", "Email", "Telepon", "Username", "Role", "Poin" };
         tableModel = new DefaultTableModel(columns, 0);
         table = new JTable(tableModel);
-        add(new JScrollPane(table), BorderLayout.CENTER);
+        table.setFont(new Font("Arial", Font.PLAIN, 13));
+        table.setRowHeight(25);
+        table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 13));
+
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setBorder(BorderFactory.createTitledBorder("Data User"));
+        add(scrollPane, BorderLayout.CENTER);
 
         btnAdd.addActionListener(e -> addUser());
         btnEdit.addActionListener(e -> editUser());
@@ -83,10 +114,12 @@ public class AdminUserView extends JPanel {
 
     private void loadData() {
         tableModel.setRowCount(0);
-        List<User> list = controller.getAllUsers();
-        for (User u : list) {
+        userList = controller.getAllUsers();
+
+        int no = 1;
+        for (User u : userList) {
             tableModel.addRow(new Object[] {
-                    u.getId(), u.getNama(), u.getEmail(), u.getTelepon(),
+                    no++, u.getNama(), u.getEmail(), u.getTelepon(),
                     u.getUsername(), u.getRole(), u.getSaldoPoin()
             });
         }
@@ -128,7 +161,7 @@ public class AdminUserView extends JPanel {
         int row = table.getSelectedRow();
         if (row == -1)
             return;
-        int id = (int) tableModel.getValueAt(row, 0);
+        int id = userList.get(row).getId();
         // Note: Controller.updateUser doesn't update password in my implementation,
         // only profile info.
         if (controller.updateUser(id, txtNama.getText(), txtEmail.getText(), txtTelepon.getText(),
@@ -146,7 +179,7 @@ public class AdminUserView extends JPanel {
         if (row == -1)
             return;
         if (JOptionPane.showConfirmDialog(this, "Yakin?") == JOptionPane.YES_OPTION) {
-            int id = (int) tableModel.getValueAt(row, 0);
+            int id = userList.get(row).getId();
             if (controller.deleteUser(id)) {
                 JOptionPane.showMessageDialog(this, "Berhasil");
                 loadData();

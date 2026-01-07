@@ -12,14 +12,25 @@ public class AdminKategoriView extends JPanel {
     private JTable table;
     private DefaultTableModel tableModel;
     private JTextField txtNama, txtDeskripsi, txtHarga;
+    private List<Kategori> kategoriList;
 
     public AdminKategoriView() {
         controller = new KategoriController();
-        setLayout(new BorderLayout(10, 10));
+        setLayout(new BorderLayout(15, 15));
+        setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        setBackground(Color.WHITE);
+
+        // Title
+        JLabel lblTitle = new JLabel("Manajemen Kategori E-Waste");
+        lblTitle.setFont(new Font("Arial", Font.BOLD, 20));
+        lblTitle.setForeground(new Color(34, 139, 34));
+        lblTitle.setBorder(BorderFactory.createEmptyBorder(0, 0, 15, 0));
+        add(lblTitle, BorderLayout.NORTH);
 
         // Form Panel
-        JPanel formPanel = new JPanel(new GridLayout(4, 2, 5, 5));
+        JPanel formPanel = new JPanel(new GridLayout(3, 2, 10, 10));
         formPanel.setBorder(BorderFactory.createTitledBorder("Form Kategori"));
+        formPanel.setBackground(Color.WHITE);
 
         formPanel.add(new JLabel("Nama Kategori:"));
         txtNama = new JTextField();
@@ -33,28 +44,48 @@ public class AdminKategoriView extends JPanel {
         txtHarga = new JTextField();
         formPanel.add(txtHarga);
 
-        JPanel btnPanel = new JPanel();
+        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        btnPanel.setBackground(Color.WHITE);
+
         JButton btnAdd = new JButton("Tambah");
+        btnAdd.setBackground(new Color(34, 139, 34));
+        btnAdd.setForeground(Color.WHITE);
+        btnAdd.setFocusPainted(false);
+
         JButton btnEdit = new JButton("Edit");
+        btnEdit.setFocusPainted(false);
+
         JButton btnDelete = new JButton("Hapus");
+        btnDelete.setBackground(new Color(220, 53, 69));
+        btnDelete.setForeground(Color.WHITE);
+        btnDelete.setFocusPainted(false);
+
         JButton btnClear = new JButton("Clear");
+        btnClear.setFocusPainted(false);
 
         btnPanel.add(btnAdd);
         btnPanel.add(btnEdit);
         btnPanel.add(btnDelete);
         btnPanel.add(btnClear);
 
-        JPanel topPanel = new JPanel(new BorderLayout());
+        JPanel topPanel = new JPanel(new BorderLayout(0, 10));
+        topPanel.setBackground(Color.WHITE);
         topPanel.add(formPanel, BorderLayout.CENTER);
         topPanel.add(btnPanel, BorderLayout.SOUTH);
 
         add(topPanel, BorderLayout.NORTH);
 
         // Table
-        String[] columns = { "ID", "Nama", "Deskripsi", "Harga" };
+        String[] columns = { "No", "Nama", "Deskripsi", "Harga" };
         tableModel = new DefaultTableModel(columns, 0);
         table = new JTable(tableModel);
-        add(new JScrollPane(table), BorderLayout.CENTER);
+        table.setFont(new Font("Arial", Font.PLAIN, 13));
+        table.setRowHeight(25);
+        table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 13));
+
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setBorder(BorderFactory.createTitledBorder("Data Kategori"));
+        add(scrollPane, BorderLayout.CENTER);
 
         // Listeners
         btnAdd.addActionListener(e -> addKategori());
@@ -73,9 +104,11 @@ public class AdminKategoriView extends JPanel {
 
     private void loadData() {
         tableModel.setRowCount(0);
-        List<Kategori> list = controller.getAllKategori();
-        for (Kategori k : list) {
-            tableModel.addRow(new Object[] { k.getId(), k.getNamaKategori(), k.getDeskripsi(), k.getHargaPerKg() });
+        kategoriList = controller.getAllKategori();
+
+        int no = 1;
+        for (Kategori k : kategoriList) {
+            tableModel.addRow(new Object[] { no++, k.getNamaKategori(), k.getDeskripsi(), k.getHargaPerKg() });
         }
     }
 
@@ -116,7 +149,7 @@ public class AdminKategoriView extends JPanel {
             JOptionPane.showMessageDialog(this, "Pilih data dulu");
             return;
         }
-        int id = (int) tableModel.getValueAt(row, 0);
+        int id = kategoriList.get(row).getId();
         String nama = txtNama.getText();
         String desc = txtDeskripsi.getText();
         try {
@@ -141,7 +174,7 @@ public class AdminKategoriView extends JPanel {
         }
         int confirm = JOptionPane.showConfirmDialog(this, "Yakin hapus?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
-            int id = (int) tableModel.getValueAt(row, 0);
+            int id = kategoriList.get(row).getId();
             if (controller.deleteKategori(id)) {
                 JOptionPane.showMessageDialog(this, "Berhasil hapus");
                 loadData();

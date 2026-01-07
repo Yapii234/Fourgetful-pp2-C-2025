@@ -2,6 +2,7 @@ package com.ewaste.views;
 
 import com.ewaste.controllers.AuthController;
 import com.ewaste.controllers.TransaksiController;
+import com.ewaste.controllers.UserController;
 import com.ewaste.models.Transaksi;
 import com.ewaste.models.User;
 import javax.swing.*;
@@ -30,9 +31,9 @@ public class UserDashboardView extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        //Header Panel
+        // Header Panel
         JPanel headerPanel = new JPanel(new BorderLayout());
-        headerPanel.setBackground(new Color(34, 139, 34)); 
+        headerPanel.setBackground(new Color(34, 139, 34));
         headerPanel.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
 
         JLabel lblBrand = new JLabel("E-Waste System");
@@ -47,7 +48,7 @@ public class UserDashboardView extends JFrame {
         lblUser.setFont(new Font("Arial", Font.BOLD, 14));
 
         JButton btnLogout = new JButton("Logout");
-        btnLogout.setBackground(new Color(220, 53, 69)); 
+        btnLogout.setBackground(new Color(220, 53, 69));
         btnLogout.setForeground(Color.WHITE);
         btnLogout.setFocusPainted(false);
         btnLogout.setFont(new Font("Arial", Font.BOLD, 12));
@@ -65,7 +66,7 @@ public class UserDashboardView extends JFrame {
 
         add(headerPanel, BorderLayout.NORTH);
 
-        //Sidebar
+        // Sidebar
         JPanel sidebar = new JPanel();
         sidebar.setLayout(new GridLayout(10, 1, 5, 5));
         sidebar.setBackground(new Color(245, 245, 245));
@@ -88,7 +89,7 @@ public class UserDashboardView extends JFrame {
 
         add(sidebar, BorderLayout.WEST);
 
-        //Content Panel
+        // Content Panel
         cardLayout = new CardLayout();
         contentPanel = new JPanel(cardLayout);
 
@@ -117,7 +118,7 @@ public class UserDashboardView extends JFrame {
         btn.setBackground(Color.WHITE);
         btn.setFocusPainted(false);
         btn.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 5, 0, 0, new Color(34, 139, 34)), 
+                BorderFactory.createMatteBorder(0, 5, 0, 0, new Color(34, 139, 34)),
                 BorderFactory.createEmptyBorder(10, 15, 10, 10)));
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
         return btn;
@@ -128,6 +129,9 @@ public class UserDashboardView extends JFrame {
             setLayout(new BorderLayout(20, 20));
             setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
             setBackground(Color.WHITE);
+
+            // Fetch fetch fresh user data (specifically points)
+            refreshUserData();
 
             // Welcome Message
             JLabel lblWelcome = new JLabel("SELAMAT DATANG, " + currentUser.getNama().toUpperCase() + "!");
@@ -142,10 +146,16 @@ public class UserDashboardView extends JFrame {
             // Stats Area
             // Calculate Stats
             List<Transaksi> history = transaksiController.getUserTransaksi(currentUser.getId());
-            double totalBerat = history.stream().mapToDouble(Transaksi::getBerat).sum();
+            double totalBerat = history.stream()
+                    .filter(t -> "selesai".equalsIgnoreCase(t.getStatus()))
+                    .mapToDouble(Transaksi::getBerat).sum();
 
             int poin = currentUser.getSaldoPoin();
             long rupiahValue = poin * 100L;
+
+            long totalTransaksiSelesai = history.stream()
+                    .filter(t -> "selesai".equalsIgnoreCase(t.getStatus()))
+                    .count();
 
             JPanel statsGrid = new JPanel(new GridLayout(1, 3, 20, 0));
             statsGrid.setOpaque(false);
@@ -155,7 +165,7 @@ public class UserDashboardView extends JFrame {
 
             statsGrid.add(createStatCard("Saldo Poin", NumberFormat.getNumberInstance().format(poin) + " pts",
                     "Rp " + NumberFormat.getNumberInstance().format(rupiahValue), new Color(255, 165, 0)));
-            statsGrid.add(createStatCard("Total Transaksi", history.size() + " Transaksi", "Selama bergabung",
+            statsGrid.add(createStatCard("Total Transaksi", totalTransaksiSelesai + " Selesai", "Kontribusi",
                     new Color(100, 149, 237)));
             statsGrid.add(createStatCard("Total Berat", String.format("%.1f kg", totalBerat), "Kontribusi",
                     new Color(60, 179, 113)));
@@ -163,7 +173,7 @@ public class UserDashboardView extends JFrame {
             centerContainer.add(statsGrid);
             centerContainer.add(Box.createRigidArea(new Dimension(0, 30))); // Spacer
 
-            //History terbaru Table
+            // History terbaru Table
             JPanel tablePanel = new JPanel(new BorderLayout(0, 10));
             tablePanel.setOpaque(false);
             tablePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -198,7 +208,7 @@ public class UserDashboardView extends JFrame {
             // D. Action Button
             JButton btnNewTrans = new JButton("BUAT TRANSAKSI BARU");
             btnNewTrans.setFont(new Font("Arial", Font.BOLD, 14));
-            btnNewTrans.setBackground(new Color(34, 139, 34)); 
+            btnNewTrans.setBackground(new Color(34, 139, 34));
             btnNewTrans.setForeground(Color.WHITE);
             btnNewTrans.setFocusPainted(false);
             btnNewTrans.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -208,6 +218,16 @@ public class UserDashboardView extends JFrame {
             centerContainer.add(btnNewTrans);
 
             add(centerContainer, BorderLayout.CENTER);
+        }
+
+        private void refreshUserData() {
+            List<User> users = new UserController().getAllUsers();
+            for (User u : users) {
+                if (u.getId() == currentUser.getId()) {
+                    currentUser.setSaldoPoin(u.getSaldoPoin());
+                    break;
+                }
+            }
         }
 
         private JPanel createStatCard(String title, String mainValue, String subValue, Color accentColor) {
